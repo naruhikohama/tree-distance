@@ -1,0 +1,10 @@
+pandas
+numpy
+graphviz
+gplearn
+zss
+deap
+torch
+scikit-learn
+h5py
+tqdm
