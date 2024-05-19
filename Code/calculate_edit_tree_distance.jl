@@ -117,9 +117,10 @@ function write_results_to_hdf5(hdf5_file, results)
     end
 end
 
-function generate_pairs(n)
-    return [(i, j) for i in 0:(n-1), j in (i+1):n-1]
+function generate_pairs(n::Int)
+    return [(i, j) for i in 0:n-1 for j in i+1:n-1]
 end
+
 
 function calculate_matrix_distance(file, n_workers=nothing)
     if n_workers === nothing

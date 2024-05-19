@@ -1,3 +1,9 @@
+#!/usr/bin/env julia
+# -*- coding: utf-8 -*-
+# Author: Tim Henderson
+# Email: tim.tadh@gmail.com
+# For licensing see the LICENSE file in the top level directory.
+
 mutable struct Node
     label::String
     children::Vector{Node}
@@ -5,51 +11,52 @@ mutable struct Node
     function Node(label::String, children::Vector{Node}=Node[])
         new(label, children)
     end
-
-    function Node(label::String)
-        new(label, Node[])
-    end
-
-    function get_children(node::Node)
-        return node.children
-    end
-
-    function get_label(node::Node)
-        return node.label
-    end
-
-    function addkid!(node::Node, child::Node; before::Bool=false)
-        if before
-            insert!(node.children, 1, child)
-        else
-            push!(node.children, child)
-        end
-        return node
-    end
-
-    function get(node::Node, label::String)
-        if node.label == label
-            return node
-        end
-        for c in node.children
-            if label in c
-                return get(c, label)
-            end
-        end
-        return nothing
-    end
-
-    function iterate(node::Node)
-        queue = [node]
-        return IterTools.flatten((n for n in queue))
-    end
 end
 
-function Base.in(b::String, node::Node)
-    if node.label == b
+# Funções associadas à estrutura Node
+
+function get_children(node::Node)
+    return node.children
+end
+
+function get_label(node::Node)
+    return node.label
+end
+
+function addkid!(node::Node, child::Node; before::Bool=false)
+    if before
+        insert!(node.children, 1, child)
+    else
+        push!(node.children, child)
+    end
+    return node
+end
+
+function get(node::Node, label::String)
+    if node.label == label
+        return node
+    end
+    for c in node.children
+        result = get(c, label)
+        if result !== nothing
+            return result
+        end
+    end
+    return nothing
+end
+
+function iter(node::Node)
+    queue = [node]
+    return IterTools.flatten((n for n in queue))
+end
+
+# Sobrescrita dos operadores e funções de Julia para trabalhar com Node
+
+function Base.in(label::String, node::Node)
+    if node.label == label
         return true
     else
-        return any(b in c for c in node.children)
+        return any(label in c for c in node.children)
     end
 end
 
@@ -65,7 +72,7 @@ function Base.:(==)(node::Node, b)
     if b === nothing
         return false
     elseif !(b isa Node)
-        throw(error())
+        throw(error("Must compare against type Node"))
     else
         return node.label == b.label
     end
